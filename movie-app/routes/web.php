@@ -6,6 +6,8 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Movie;
 
 /*
@@ -40,6 +42,13 @@ Route::post('/movies', [MovieController::class, 'store']);
 Route::get('/movies/{movie}/edit', [MovieController::class, 'edit']);
 
 Route::put('/movies/{movie}', [MovieController::class, 'update']);
+
+
+Route::get('/register', [AuthController::class, 'showRegistrationForm']);
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/login', [AuthController::class, 'showLoginForm']);
+Route::post('/login', [AuthController::class, 'login']);
 
 
 Route::get('/genres/create', [GenreController::class, 'create']);

@@ -6,6 +6,7 @@ use App\Models\Movie;
 use App\Http\Controllers\Controller;
 use App\Models\Genre;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
@@ -42,6 +43,17 @@ class MovieController extends Controller
             'rating' => 'required|numeric',
         ]);
             
+        if($request->hasFile('poster')) {
+            // Set Name Image
+            $extension = $request->file('poster')->getClientOriginalExtension();
+            $imageName = time(). "." . $extension; 
+
+            // Store to Storage
+            $request->file('poster')->storAs('assets/img', $imageName, 'public');
+            $validateData['poster'] = $imageName;
+        
+        }
+
         Movie::create($validateData);
         return redirect('/movies')->with('success', 'Data Berhasil Ditambahkan');
     }
@@ -51,7 +63,7 @@ class MovieController extends Controller
      */
     public function show(Movie $movie)
     {
-        //
+        
     }
 
     /**
@@ -70,12 +82,25 @@ class MovieController extends Controller
     {
         $validateData = $request->validate([
             'judul' => 'required',
-            'poster' => 'required',
+            'poster' => 'nullable|image',
             'genre_id' => 'required',
             'negara' => 'required',
             'tahun' => 'required|integer',
             'rating' => 'required|numeric',
         ]);
+
+        if ($request->hasFile('poster')) {
+            //Delete old image
+            Storage::disk('public')->delete('assets/img/' . $movie->poster);
+
+            //Set Image name
+            $extension = $request->file('poster')->getClientOriginalExtension();
+            $imageName = time() . '.' . $extension;
+
+            //Store to storage
+            $request->file('poster')->storeAs('assets/img', $imageName, 'public');
+            $validateData['poster'] = $imageName;
+        }
 
         $movie->update($validateData);
         return redirect('/movies')->with('success', 'Data berhasil diupdate');
